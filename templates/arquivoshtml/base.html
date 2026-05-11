@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal do PET-Saúde Informação e Saúde Digital UFPI/FMS Teresina.">
+    <title>{% block title %}PET-Saúde Digital UFPI/FMS{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <a href="{{ url_for('index') }}" class="brand" aria-label="Página inicial do PET-Saúde Digital">
+            <img src="{{ url_for('static', filename='img/logo-pet.png') }}" alt="Logo PET-Saúde Informação e Saúde Digital" class="brand-logo">
+        </a>
+
+        <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-label="Abrir menu">
+        <label for="menu-toggle" class="menu-button" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <nav class="nav-links" aria-label="Menu principal">
+            <a href="{{ url_for('index') }}">Início</a>
+            <div class="nav-dropdown">
+    <a href="{{ url_for('conheca_pet') }}" class="nav-dropdown-toggle">
+        Apresentação <span>▾</span>
+    </a>
+    <div class="dropdown-menu">
+        <a href="{{ url_for('conheca_pet') }}">Conheça o PET-Digital</a>
+        <a href="{{ url_for('grupos') }}">Grupos</a>
+        <a href="{{ url_for('equipe') }}">Equipe</a>
+    </div>
+</div>
+            
+            <a href="{{ url_for('eixos') }}">Eixos temáticos</a>
+            <a href="{{ url_for('noticias') }}">Notícias</a>
+            <a href="{{ url_for('galeria') }}">Banco de fotos</a>
+            <a href="{{ url_for('materiais') }}">Materiais</a>
+            {% if session.get('usuario_logado') %}
+                <a href="{{ url_for('dashboard') }}" class="nav-pill nav-pill-outline">Uploads</a>
+                <a href="{{ url_for('logout') }}" class="nav-pill">Sair</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-pill">Acesso restrito</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="conteudo-principal">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-container" role="status" aria-live="polite">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div>
+            <strong>PET-Saúde: Informação e Saúde Digital</strong>
+            <p>Universidade Federal do Piauí · Fundação Municipal de Saúde de Teresina</p>
+        </div>
+        <p class="footer-note">Portal demonstrativo para divulgação de ações, materiais e registros do projeto.</p>
+    </footer>
+</body>
+</html>

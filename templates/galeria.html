@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Banco de fotos · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container narrow">
+        <span class="eyebrow">Banco de fotos</span>
+        <h1>Registros das ações do PET-Saúde Digital</h1>
+        <p>Fotos enviadas pela equipe aparecerão automaticamente nesta página.</p>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="notice-banner">
+        <strong>Importante:</strong> publique apenas imagens autorizadas e evite expor dados sensíveis de usuários, prontuários, fichas ou telas de sistemas.
+    </div>
+
+    {% if fotos %}
+        <div class="gallery-grid">
+            {% for foto in fotos %}
+            <figure class="gallery-item">
+                <img src="{{ url_for('baixar_arquivo', filename=foto) }}" alt="Foto enviada: {{ foto }}">
+                <figcaption>{{ foto }}</figcaption>
+            </figure>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <span>📷</span>
+            <h2>Nenhuma foto publicada ainda</h2>
+            <p>Faça login em <strong>Acesso restrito</strong> e envie imagens PNG, JPG, JPEG ou WEBP pelo painel de uploads.</p>
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Enviar fotos</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

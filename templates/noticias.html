@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Notícias · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container narrow">
+        <span class="eyebrow">Notícias</span>
+        <h1>Atualizações e registros do projeto</h1>
+        <p>Espaço para divulgar ações, oficinas, visitas técnicas, materiais produzidos e resultados dos grupos tutoriais.</p>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="notice-banner">
+        <strong>Área editável:</strong> estes textos são modelos iniciais. Depois você pode trocar por notícias reais e adicionar imagem, data, autor e link.
+    </div>
+
+    <div class="card-grid three-columns">
+        {% for noticia in noticias %}
+        <article class="news-card large">
+            <div class="news-image-placeholder">{{ noticia.categoria[:1] }}</div>
+            <span class="news-meta">{{ noticia.categoria }} · {{ noticia.data }}</span>
+            <h2>{{ noticia.titulo }}</h2>
+            <p>{{ noticia.resumo }}</p>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Conheça o PET-Digital · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container narrow">
+        <span class="eyebrow">Apresentação</span>
+        <h1>Conheça o PET-Digital</h1>
+        <p>
+            Projeto da Universidade Federal do Piauí em parceria com a Fundação Municipal
+            de Saúde de Teresina para promover formação, inovação e integração no SUS.
+        </p>
+    </div>
+</section>
+
+<section class="section container narrow text-page">
+    <div class="callout-box">
+        <h2>Saúde Digital na Atenção Primária à Saúde de Teresina, PI</h2>
+        <p>
+            O projeto busca desenvolver ações de saúde digital na APS do SUS Teresina,
+            envolvendo formação, gestão, assistência, acompanhamento, monitoramento e pesquisa.
+        </p>
+    </div>
+
+    <h2>O que é o PET-Saúde/I&amp;SD?</h2>
+    <p>
+        O Programa de Educação pelo Trabalho para a Saúde fortalece a integração entre
+        ensino, serviço e comunidade. Na temática de Informação e Saúde Digital, a proposta
+        estimula a formação crítica e interdisciplinar, o uso ético das tecnologias e a
+        produção de soluções para desafios do SUS.
+    </p>
+
+    <h2>Objetivo do projeto em Teresina</h2>
+    <p>
+        Desenvolver ações de saúde digital na Atenção Primária à Saúde do SUS Teresina,
+        a partir de estratégias de formação, educação permanente e transformação digital,
+        fortalecendo a integração ensino-serviço-comunidade, o trabalho interprofissional
+        e a inovação tecnológica.
+    </p>
+
+    <div class="feature-grid">
+        <article>
+            <span class="card-icon">👥</span>
+            <h3>Público envolvido</h3>
+            <p>
+                Estudantes, docentes, trabalhadores da saúde, gestores, preceptores,
+                orientadores de serviço e usuários do SUS.
+            </p>
+        </article>
+
+        <article>
+            <span class="card-icon">🏥</span>
+            <h3>Cenários de prática</h3>
+            <p>
+                Unidades selecionadas da rede municipal, incluindo UBS e CAPS vinculados
+                à Fundação Municipal de Saúde.
+            </p>
+        </article>
+
+        <article>
+            <span class="card-icon">🔐</span>
+            <h3>Ética e dados</h3>
+            <p>
+                As atividades devem respeitar a proteção de dados pessoais e sensíveis,
+                a confidencialidade e a segurança da informação.
+            </p>
+        </article>
+    </div>
+
+    <h2>Cursos envolvidos</h2>
+    <p>
+        A proposta reúne cursos das áreas de saúde, exatas e humanas, favorecendo a atuação
+        interprofissional.
+    </p>
+
+    <div class="tag-list">
+        {% for curso in cursos %}
+            <span>{{ curso }}</span>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

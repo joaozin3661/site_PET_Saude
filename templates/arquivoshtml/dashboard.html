@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Painel de uploads · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="section container narrow">
+    <div class="dashboard-card">
+        <span class="eyebrow">Painel administrativo</span>
+        <h1>Enviar material</h1>
+        <p>Usuário logado: <strong>{{ session['usuario_logado'] }}</strong></p>
+
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+    <label for="titulo">Nome do material</label>
+    <input 
+        type="text" 
+        name="titulo" 
+        id="titulo" 
+        placeholder="Ex: Cartilha sobre Saúde Digital"
+        required
+    >
+
+    <label for="descricao">Descrição do material</label>
+    <textarea 
+        name="descricao" 
+        id="descricao" 
+        rows="4"
+        placeholder="Escreva uma breve descrição do arquivo..."
+    ></textarea>
+
+    <label for="arquivo">Selecione um arquivo</label>
+    <input type="file" name="arquivo" id="arquivo" required>
+
+    <button type="submit" class="btn btn-primary">Enviar para o portal</button>
+</form>
+
+        <div class="instrucoes">
+            <h2>Orientações rápidas</h2>
+            <ul>
+                <li>Formatos permitidos: PDF, MP4, PNG, JPG, JPEG e WEBP.</li>
+                <li>Imagens publicadas aqui também aparecem no Banco de fotos.</li>
+                <li>Não envie documentos com CPF, matrícula, endereço, prontuário ou informações sensíveis de usuários.</li>
+                <li>Para produção, troque as senhas padrão e configure a chave secreta via variável de ambiente.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

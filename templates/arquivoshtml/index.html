@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Início · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="hero hero-home">
+    <div class="hero-content">
+        <span class="eyebrow">UFPI · FMS Teresina · SUS Digital</span>
+        <h1>Saúde Digital na Atenção Primária à Saúde de Teresina</h1>
+        <p>Formação, inovação e integração no SUS para fortalecer a cultura digital, apoiar trabalhadores e aproximar os serviços de saúde da comunidade.</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('apresentacao') }}" class="btn btn-primary">Conhecer o projeto</a>
+            <a href="{{ url_for('eixos') }}" class="btn btn-secondary">Ver eixos temáticos</a>
+        </div>
+    </div>
+    <div class="hero-image">
+    <img src="{{ url_for('static', filename='img/robo-pet.png') }}" alt="Mascote PET-Saúde Digital">
+</div>
+</section>
+
+<section class="section container overlap-grid">
+    <article class="info-card highlight-card">
+        <span class="card-icon">🎓</span>
+        <h2>Integração ensino-serviço-comunidade</h2>
+        <p>O projeto aproxima estudantes, docentes, trabalhadores do SUS e usuários para desenvolver ações práticas em saúde digital.</p>
+    </article>
+    <article class="info-card highlight-card">
+        <span class="card-icon">🩺</span>
+        <h2>Atenção Primária à Saúde</h2>
+        <p>As ações são pensadas para apoiar os serviços da APS, qualificar processos e melhorar o acompanhamento dos usuários.</p>
+    </article>
+    <article class="info-card highlight-card">
+        <span class="card-icon">💻</span>
+        <h2>Inovação aplicada ao SUS</h2>
+        <p>O foco é usar tecnologia, dados e comunicação de forma ética, segura e conectada às necessidades reais das unidades.</p>
+    </article>
+</section>
+
+<section class="section container">
+    <div class="section-heading">
+        <span class="eyebrow">Eixos do projeto</span>
+        <h2>Três frentes para organizar as ações</h2>
+        <p>Os eixos reúnem atividades de formação, desenvolvimento de soluções e uso qualificado de dados em saúde.</p>
+    </div>
+
+    <div class="card-grid three-columns">
+        {% for eixo in eixos %}
+        <article class="eixo-card">
+            <span class="badge">Eixo {{ eixo.numero }}</span>
+            <h3>{{ eixo.titulo }}</h3>
+            <p>{{ eixo.resumo }}</p>
+            <a href="{{ url_for('eixos') }}#eixo-{{ eixo.numero }}" class="text-link">Detalhar eixo →</a>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section section-muted">
+    <div class="container split-section">
+        <div>
+            <span class="eyebrow">Unidades e equipes</span>
+            <h2>Grupos tutoriais distribuídos pela rede SUS</h2>
+            <p>Os GTs atuam em unidades selecionadas, com tutores, coordenação, preceptores, orientadores de serviço e monitores.</p>
+            <a href="{{ url_for('eixos') }}#grupos-tutoriais" class="btn btn-primary">Ver grupos e unidades</a>
+        </div>
+        <div class="mini-list">
+            {% for grupo in grupos[:5] %}
+            <div class="mini-list-item">
+                <strong>GT {{ grupo.numero }}</strong>
+                <span>{{ grupo.ubs }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="section-heading with-action">
+        <div>
+            <span class="eyebrow">Atualizações</span>
+            <h2>Notícias do projeto</h2>
+        </div>
+        <a href="{{ url_for('noticias') }}" class="text-link">Ver todas →</a>
+    </div>
+    <div class="card-grid two-columns">
+        {% for noticia in noticias %}
+        <article class="news-card">
+            <span class="news-meta">{{ noticia.categoria }} · {{ noticia.data }}</span>
+            <h3>{{ noticia.titulo }}</h3>
+            <p>{{ noticia.resumo }}</p>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

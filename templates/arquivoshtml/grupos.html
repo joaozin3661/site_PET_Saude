@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Grupos · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container narrow">
+        <span class="eyebrow">Grupos tutoriais</span>
+        <h1>Distribuição dos grupos</h1>
+        <p>
+            Organização dos grupos tutoriais por eixo temático, unidade de atuação e tutores responsáveis.
+        </p>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="section-heading">
+        <h2>Distribuição por eixo temático</h2>
+        <p>
+            Cada eixo reúne grupos tutoriais relacionados a uma frente de trabalho do PET-Saúde Digital.
+        </p>
+    </div>
+
+    <div class="card-grid three-columns">
+        {% for eixo in eixos %}
+            <article class="eixo-card">
+                <span class="badge">Eixo {{ eixo.numero }}</span>
+                <h3>{{ eixo.titulo }}</h3>
+                <p>{{ eixo.resumo }}</p>
+
+                <div class="tag-list related-groups">
+                    {% for grupo in eixo.grupos %}
+                        <span>{{ grupo }}</span>
+                    {% endfor %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section container section-muted">
+    <div class="section-heading">
+        <h2>Grupos tutoriais</h2>
+        <p>
+            Resumo dos grupos com tema, unidade e tutores responsáveis.
+        </p>
+    </div>
+
+    <div class="card-grid two-columns">
+        {% for grupo in grupos %}
+            <article class="gt-card">
+                <span class="badge">GT {{ grupo.numero }}</span>
+                <h3>{{ grupo.titulo }}</h3>
+                <p>{{ grupo.descricao }}</p>
+
+                <div class="gt-meta">
+                    <span><strong>Unidade:</strong> {{ grupo.ubs }}</span>
+                    <span><strong>Tutores:</strong> {{ grupo.tutor }} · {{ grupo.coordenador }}</span>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

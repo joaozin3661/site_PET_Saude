@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Materiais · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container narrow">
+        <span class="eyebrow">Materiais</span>
+        <h1>Biblioteca do projeto</h1>
+        <p>Acesse documentos, cartilhas, vídeos e imagens compartilhadas pela equipe do PET-Saúde Digital.</p>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="filter-bar">
+        <input type="text" id="buscaNome" placeholder="Pesquisar pelo nome do arquivo..." onkeyup="filtrarArquivos()">
+        <select id="filtroTipo" onchange="filtrarArquivos()">
+            <option value="">Todos os formatos</option>
+            <option value="pdf">Documentos PDF</option>
+            <option value="mp4">Vídeos MP4</option>
+            <option value="img">Imagens</option>
+        </select>
+    </div>
+
+    <div id="listaArquivos" class="file-grid">
+{% for material in materiais %}
+{% set arquivo = material.arquivo %}
+{% set ext = arquivo.split('.')[-1]|lower %}
+<article 
+    class="file-card" 
+    data-nome="{{ (material.titulo ~ ' ' ~ material.descricao ~ ' ' ~ arquivo)|lower }}" 
+    data-tipo="{{ ext }}"
+>       
+            <div class="file-icon">
+                {% if ext == 'pdf' %}📄
+                {% elif ext == 'mp4' %}🎥
+                {% elif ext in ['png', 'jpg', 'jpeg', 'webp'] %}🖼️
+                {% else %}📁{% endif %}
+            </div>
+            <span class="file-type">{{ ext }}</span>
+            <h2>{{ material.titulo }}</h2>
+
+{% if material.descricao %}
+    <p class="file-description">{{ material.descricao }}</p>
+{% else %}
+    <p class="file-description">Sem descrição informada.</p>
+{% endif %}
+
+<small class="file-original-name">Arquivo: {{ arquivo }}</small>
+            <div class="file-actions">
+                <a href="{{ url_for('baixar_arquivo', filename=arquivo) }}" target="_blank" class="btn btn-secondary">Abrir / baixar</a>
+                {% if session.get('usuario_logado') %}
+                <form action="{{ url_for('deletar_arquivo', filename=arquivo) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir {{ arquivo }}?');">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+                {% endif %}
+            </div>
+        </article>
+        {% else %}
+        <div class="empty-state full-width">
+            <span>📂</span>
+            <h2>Nenhum material disponível no momento</h2>
+            <p>Os arquivos enviados pela equipe aparecerão aqui.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+function filtrarArquivos() {
+    const busca = document.getElementById('buscaNome').value.toLowerCase();
+    const tipo = document.getElementById('filtroTipo').value;
+    const cards = document.querySelectorAll('.file-card');
+
+    cards.forEach(card => {
+        const nome = card.getAttribute('data-nome');
+        const extensao = card.getAttribute('data-tipo');
+        const matchNome = nome.includes(busca);
+        let matchTipo = tipo === '' || tipo === extensao;
+
+        if (tipo === 'img') {
+            matchTipo = ['png', 'jpg', 'jpeg', 'webp'].includes(extensao);
+        }
+
+        card.style.display = (matchNome && matchTipo) ? 'flex' : 'none';
+    });
+}
+</script>
+{% endblock %}

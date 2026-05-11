@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Eixos temáticos · PET-Saúde Digital UFPI/FMS{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container narrow">
+        <span class="eyebrow">Eixos temáticos</span>
+        <h1>Frentes de atuação do PET-Saúde Digital</h1>
+        <p>Os eixos organizam as ações dos grupos tutoriais em formação, soluções tecnológicas, interoperabilidade, análise de dados e comunicação em saúde.</p>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="timeline">
+        {% for eixo in eixos %}
+        <article class="timeline-item" id="eixo-{{ eixo.numero }}">
+            <div class="timeline-number">{{ eixo.numero }}</div>
+            <div class="timeline-content">
+                <span class="badge">Eixo {{ eixo.numero }}</span>
+                <h2>{{ eixo.titulo }}</h2>
+                <p>{{ eixo.resumo }}</p>
+                <div class="check-grid">
+                    {% for acao in eixo.acoes %}
+                    <span>✓ {{ acao }}</span>
+                    {% endfor %}
+                </div>
+                <p class="related-groups"><strong>GTs relacionados:</strong> {{ eixo.grupos|join(', ') }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section section-muted">
+    <div class="container">
+        <div class="section-heading">
+            <span class="eyebrow">Grupos tutoriais</span>
+            <h2>Descrições provisórias para o site</h2>
+            <p>Texto pronto para apresentar o que cada grupo faz, como foi pedido no WhatsApp.</p>
+        </div>
+
+        <div class="card-grid two-columns">
+            {% for grupo in grupos %}
+            <article class="gt-card">
+                <span class="badge">GT {{ grupo.numero }}</span>
+                <h3>{{ grupo.titulo }}</h3>
+                <p>{{ grupo.descricao }}</p>
+                <div class="gt-meta">
+                    <span><strong>Unidade:</strong> {{ grupo.ubs }}</span>
+                    <span><strong>Tutores:</strong> {{ grupo.tutor }} · {{ grupo.coordenador }}</span>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
