@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Portal PET-Saúde Digital UFPI/FMS
 
 Projeto em Flask para divulgação do PET-Saúde: Informação e Saúde Digital em Teresina.
@@ -48,3 +49,6 @@ export SENHA_MONITOR_PET="nova-senha"
 - Todos os arquivos enviados aparecem na Biblioteca de materiais.
 - Não publique PDFs com CPF, matrícula, endereço, prontuário, ficha de atendimento ou qualquer dado sensível.
 - A aba sobre o **Meu SUS Digital** pode ser adicionada depois como uma página própria, aproveitando o mesmo padrão visual das páginas atuais.
+=======
+# site_PET_Saude
+>>>>>>> origin/main
