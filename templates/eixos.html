@@ -46,8 +46,9 @@
                 <h3>{{ grupo.titulo }}</h3>
                 <p>{{ grupo.descricao }}</p>
                 <div class="gt-meta">
-                    <span><strong>Unidade:</strong> {{ grupo.ubs }}</span>
-                    <span><strong>Tutores:</strong> {{ grupo.tutor }} · {{ grupo.coordenador }}</span>
+                    <span><strong>Unidade:</strong> <a href="{{ grupo.link_maps }}" target="_blank" class="link-externo">{{ grupo.ubs }}</a> </span>
+                    <span><strong>Tutores:</strong> <a href="{{ grupo.link_lattes_tutor }}" target="_blank" class="link-externo">{{ grupo.tutor }}</a> · 
+                        <a href="{{ grupo.link_lattes_coord }}" target="_blank" class="link-externo">{{ grupo.coordenador }}</a></span>
                 </div>
             </article>
             {% endfor %}

@@ -19,8 +19,15 @@
         <div class="gallery-grid">
             {% for foto in fotos %}
             <figure class="gallery-item">
-                <img src="{{ url_for('baixar_arquivo', filename=foto) }}" alt="Foto enviada: {{ foto }}">
-                <figcaption>{{ foto }}</figcaption>
+                <img src="{{ url_for('baixar_arquivo', filename=foto.arquivo) }}" alt="Foto: {{ foto.titulo }}">
+                <figcaption>
+                    <strong>{{ foto.titulo }}</strong>
+                    {% if foto.descricao %}
+                        <p class="file-description" style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; color: var(--texto-suave);">
+                            {{ foto.descricao }}
+                        </p>
+                    {% endif %}
+                </figcaption>
             </figure>
             {% endfor %}
         </div>

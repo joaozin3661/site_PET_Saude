@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ noticia.titulo }} · PET-Saúde UFPI{% endblock %}
+
+{% block content %}
+<section class="section container narrow text-page" style="margin-top: 40px; background: var(--branco); padding: 50px; border-radius: var(--radius); box-shadow: var(--sombra-suave); border: 1px solid var(--borda);">
+    
+    <div style="margin-bottom: 30px; border-bottom: 2px solid var(--azul-claro); padding-bottom: 20px;">
+        <h1 style="color: var(--azul-pet); font-size: 2.2rem; line-height: 1.3; margin-bottom: 15px;">{{ noticia.titulo }}</h1>
+        <div style="color: var(--texto-suave); font-size: 0.95rem;">
+            Publicado em: {{ noticia.data }} | Autor: {{ noticia.autor }}
+        </div>
+    </div>
+    
+    <div class="conteudo-noticia" style="font-size: 1.1rem; line-height: 1.8; color: var(--texto);">
+        {{ noticia.conteudo|safe }}
+    </div>
+    
+    <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--borda);">
+        <a href="{{ url_for('noticias') }}" class="btn btn-secondary">← Voltar para as notícias</a>
+    </div>
+</section>
+{% endblock %}

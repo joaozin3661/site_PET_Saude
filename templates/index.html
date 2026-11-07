@@ -13,25 +13,72 @@
         </div>
     </div>
     <div class="hero-image">
-    <img src="{{ url_for('static', filename='img/robo-pet.png') }}" alt="Mascote PET-Saúde Digital">
+        <img src="{{ url_for('static', filename='img/robo-pet-lindo.jpeg') }}" alt="Mascote PET-Saúde Digital">
+    </div>
+</section>
+
+<section class="section container">
+    <div class="section-heading with-action">
+        <div>
+            <span class="eyebrow">Atualizações</span>
+            <h2>Notícias do projeto</h2>
+        </div>
+        <a href="{{ url_for('noticias') }}" class="text-link">Ver todas →</a>
+    </div>
+    <div class="card-grid two-columns">
+        {% for noticia in noticias %}
+        <article class="news-card" style="padding: 0; overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column;">
+    <a href="{{ url_for('ver_noticia', id=noticia.id) }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
+        
+        <div style="height: 200px; background-color: var(--azul-claro); overflow: hidden;">
+    
+    {% if noticia.capa and 'capa_' in noticia.capa %}
+        <img src="{{ url_for('baixar_arquivo', filename=noticia.capa) }}" style="width: 100%; height: 100%; object-fit: cover;" alt="Capa: {{ noticia.titulo }}">
+    {% else %}
+        <img src="{{ url_for('static', filename='img/robo-pet-lindo.jpeg') }}" style="width: 100%; height: 100%; object-fit: cover;" alt="Mascote PET-Saúde">
+    {% endif %}
+
 </div>
+        
+        <div style="padding: 24px; flex-grow: 1; display: flex; flex-direction: column;">
+            <span class="news-meta" style="margin-bottom: 10px;">{{ noticia.data }}</span>
+            <h3 style="font-size: 1.2rem; margin-bottom: 12px; line-height: 1.4;">{{ noticia.titulo }}</h3>
+            
+            <p style="margin-bottom: 20px;">{{ noticia.conteudo|striptags|truncate(100) }}</p>
+            
+            <span class="text-link" style="margin-top: auto;">Ler matéria completa →</span>
+        </div>
+    </a>
+</article>
+        {% else %}
+        <p style="color: var(--texto-suave);">Nenhuma atualização publicada recentemente.</p>
+        {% endfor %}
+    </div>
 </section>
 
 <section class="section container overlap-grid">
     <article class="info-card highlight-card">
         <span class="card-icon">🎓</span>
-        <h2>Integração ensino-serviço-comunidade</h2>
-        <p>O projeto aproxima estudantes, docentes, trabalhadores do SUS e usuários para desenvolver ações práticas em saúde digital.</p>
+        <details class="card-sanfona">
+            <summary><h2>Integração ensino-serviço-comunidade</h2></summary>
+            <p>O projeto aproxima estudantes, docentes, trabalhadores do SUS e usuários para desenvolver ações práticas em saúde digital.</p>
+        </details>
     </article>
+
     <article class="info-card highlight-card">
         <span class="card-icon">🩺</span>
-        <h2>Atenção Primária à Saúde</h2>
-        <p>As ações são pensadas para apoiar os serviços da APS, qualificar processos e melhorar o acompanhamento dos usuários.</p>
+        <details class="card-sanfona">
+            <summary><h2>Atenção Primária à Saúde</h2></summary>
+            <p>As ações são pensadas para apoiar os serviços da APS, qualificar processos e melhorar o acompanhamento dos usuários.</p>
+        </details>
     </article>
+
     <article class="info-card highlight-card">
         <span class="card-icon">💻</span>
-        <h2>Inovação aplicada ao SUS</h2>
-        <p>O foco é usar tecnologia, dados e comunicação de forma ética, segura e conectada às necessidades reais das unidades.</p>
+        <details class="card-sanfona">
+            <summary><h2>Inovação aplicada ao SUS</h2></summary>
+            <p>O foco é usar tecnologia, dados e comunicação de forma ética, segura e conectada às necessidades reais das unidades.</p>
+        </details>
     </article>
 </section>
 
@@ -70,25 +117,6 @@
             </div>
             {% endfor %}
         </div>
-    </div>
-</section>
-
-<section class="section container">
-    <div class="section-heading with-action">
-        <div>
-            <span class="eyebrow">Atualizações</span>
-            <h2>Notícias do projeto</h2>
-        </div>
-        <a href="{{ url_for('noticias') }}" class="text-link">Ver todas →</a>
-    </div>
-    <div class="card-grid two-columns">
-        {% for noticia in noticias %}
-        <article class="news-card">
-            <span class="news-meta">{{ noticia.categoria }} · {{ noticia.data }}</span>
-            <h3>{{ noticia.titulo }}</h3>
-            <p>{{ noticia.resumo }}</p>
-        </article>
-        {% endfor %}
     </div>
 </section>
 {% endblock %}

@@ -10,7 +10,7 @@
 <body>
     <header class="site-header">
         <a href="{{ url_for('index') }}" class="brand" aria-label="Página inicial do PET-Saúde Digital">
-            <img src="{{ url_for('static', filename='img/logo-pet.png') }}" alt="Logo PET-Saúde Informação e Saúde Digital" class="brand-logo">
+            <img src="{{ url_for('static', filename='img/logo-pet-semfundo.png') }}" alt="Logo PET-Saúde Informação e Saúde Digital" class="brand-logo">
         </a>
 
         <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-label="Abrir menu">
@@ -36,7 +36,7 @@
             <a href="{{ url_for('eixos') }}">Eixos temáticos</a>
             <a href="{{ url_for('noticias') }}">Notícias</a>
             <a href="{{ url_for('galeria') }}">Banco de fotos</a>
-            <a href="{{ url_for('materiais') }}">Materiais</a>
+            <a href="{{ url_for('materiais') }}">Produção técnica</a>
             {% if session.get('usuario_logado') %}
                 <a href="{{ url_for('dashboard') }}" class="nav-pill nav-pill-outline">Uploads</a>
                 <a href="{{ url_for('logout') }}" class="nav-pill">Sair</a>

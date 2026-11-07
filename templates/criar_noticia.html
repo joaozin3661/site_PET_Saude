@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Criar Notícia · PET-Saúde{% endblock %}
+
+{% block content %}
+<section class="section container narrow">
+    <div class="dashboard-card" style="width: 100%;">
+        <h1>Nova Postagem</h1>
+        <form method="POST" enctype="multipart/form-data">
+    
+    <label>Título da Notícia</label>
+    <input type="text" name="titulo" required style="width: 100%; margin-bottom: 20px;">
+    
+    <label>Imagem de Capa (Opcional)</label>
+    <input type="file" name="capa" accept="image/*" style="width: 100%; margin-bottom: 20px;">
+    
+    <label>Conteúdo</label> 
+    <textarea name="conteudo" id="editor"></textarea>
+    
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Publicar Agora</button>
+</form>
+    </div>
+</section>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            // Esta configuração liga o editor à rota que acabamos de criar no Flask
+            ckfinder: {
+                uploadUrl: '/upload_imagem'
+            }
+        })
+        .catch(error => { console.error(error); });
+</script>
+{% endblock %}

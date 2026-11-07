@@ -5,8 +5,14 @@
 <section class="section container narrow">
     <div class="dashboard-card">
         <span class="eyebrow">Painel administrativo</span>
+
+        <h1>Cadastrar notícia</h1>
+        <a href="{{ url_for('criar_noticia') }}" class="btn btn-secondary" style="margin-bottom: 20px;">✍️ Escrever nova notícia</a>
+
+
+
         <h1>Enviar material</h1>
-        <p>Usuário logado: <strong>{{ session['usuario_logado'] }}</strong></p>
+        <p>Usuário logado: <strong>{{ session['usuario_logado'] }}</strong> ({{ 'administrador' if session.get('papel') == 'admin' else 'editor' }})</p>
 
         <form method="POST" enctype="multipart/form-data" class="upload-form">
     <label for="titulo">Nome do material</label>
@@ -41,6 +47,7 @@
                 <li>Para produção, troque as senhas padrão e configure a chave secreta via variável de ambiente.</li>
             </ul>
         </div>
+       
     </div>
 </section>
 {% endblock %}

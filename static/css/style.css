@@ -14,6 +14,19 @@
     --sombra-suave: 0 10px 28px rgba(23, 70, 111, 0.08);
     --radius: 20px;
 }
+.link-externo {
+    color: var(--laranja-pet); /* Usa o laranja do seu projeto */
+    text-decoration: underline;
+    transition: opacity 0.2s;
+}
+.hero-image img {
+    border-radius: var(--radius); /* Usa a borda de 20px padrão do seu tema */
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.3); /* Adiciona uma sombra profunda para destacar do fundo escuro */
+}
+.link-externo:hover {
+    opacity: 0.8;
+    color: var(--laranja-escuro);
+}
 
 * {
     margin: 0;
@@ -295,7 +308,7 @@ a {
 }
 
 .overlap-grid {
-    margin-top: -72px;
+    margin-top: 15px;
     position: relative;
     z-index: 2;
 }
@@ -368,6 +381,58 @@ a {
 .text-page p {
     color: var(--texto-suave);
     line-height: 1.75;
+}
+/* Permite que o card encolha e não fique esticado no grid quando fechado */
+.overlap-grid .highlight-card {
+    min-height: auto;
+    align-self: start;
+}
+
+/* Esconde a seta padrão do navegador e muda o cursor */
+.card-sanfona summary {
+    list-style: none;
+    cursor: pointer;
+    outline: none;
+}
+.card-sanfona summary::-webkit-details-marker {
+    display: none; 
+}
+
+/* Estilo do título clicável */
+.card-sanfona h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0; /* Remove a margem quando fechado */
+    transition: color 0.2s ease;
+}
+
+.card-sanfona h2:hover {
+    color: var(--laranja-pet); /* Fica laranja ao passar o mouse */
+}
+
+/* Adiciona o sinal de "+" quando fechado */
+.card-sanfona h2::after {
+    content: "+";
+    font-size: 1.6rem;
+    color: var(--laranja-pet);
+    font-weight: 400;
+}
+
+/* Muda para "-" quando o card está aberto */
+.card-sanfona[open] h2::after {
+    content: "−";
+}
+
+/* Suaviza a entrada do texto */
+.card-sanfona p {
+    margin-top: 16px;
+    animation: fadeIn 0.3s ease-in-out; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .section-heading {

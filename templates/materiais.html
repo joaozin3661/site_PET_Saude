@@ -48,7 +48,7 @@
 <small class="file-original-name">Arquivo: {{ arquivo }}</small>
             <div class="file-actions">
                 <a href="{{ url_for('baixar_arquivo', filename=arquivo) }}" target="_blank" class="btn btn-secondary">Abrir / baixar</a>
-                {% if session.get('usuario_logado') %}
+                {% if session.get('papel') == 'admin' %}
                 <form action="{{ url_for('deletar_arquivo', filename=arquivo) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir {{ arquivo }}?');">
                     <button type="submit" class="btn btn-danger">Excluir</button>
                 </form>

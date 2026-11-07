@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}GT {{ grupo.numero }} - {{ grupo.titulo }} · Equipe{% endblock %}
+
+{% block content %}
+<section class="section container narrow text-page" style="margin-top: 40px; background: var(--branco); padding: 50px; border-radius: var(--radius); box-shadow: var(--sombra-suave); border: 1px solid var(--borda);">
+    
+    <div style="margin-bottom: 30px; border-bottom: 2px solid var(--azul-claro); padding-bottom: 20px;">
+        <span class="badge">GT {{ grupo.numero }}</span>
+        <h1 style="color: var(--azul-pet); font-size: 2.2rem; line-height: 1.3; margin: 15px 0;">{{ grupo.titulo }}</h1>
+        <p style="font-size: 1.1rem; color: var(--laranja-pet); font-weight: 700;">📍 Unidade: {{ grupo.ubs }}</p>
+    </div>
+
+    <div style="margin-bottom: 35px;">
+        <h3 style="color: var(--azul-pet); font-size: 1.2rem; margin-bottom: 12px;">🎓 Professores e Preceptoria</h3>
+        <ul style="list-style: none; line-height: 1.8; padding: 0; font-size: 1.05rem;">
+            <li><strong>Tutor(a):</strong> <a href="{{ grupo.link_lattes_tutor }}" target="_blank" class="text-link" style="margin:0;">{{ grupo.tutor }} (Lattes)</a></li>
+            <li><strong>Coordenador(a):</strong> <a href="{{ grupo.link_lattes_coord }}" target="_blank" class="text-link" style="margin:0;">{{ grupo.coordenador }} (Lattes)</a></li>
+            <li><strong>Preceptor(a):</strong> <span style="color: var(--texto);">{{ grupo.preceptor }}</span></li>
+            <li style="margin-top: 15px;">
+                <a href="{{ grupo.link_maps }}" target="_blank" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">🗺️ Ver localização da UBS no Maps</a>
+            </li>
+        </ul>
+    </div>
+
+    <div style="margin-bottom: 35px;">
+        <h3 style="color: var(--azul-pet); font-size: 1.2rem; margin-bottom: 15px;">👥 Estudantes</h3>
+        <div class="tag-list">
+            {% for aluno in grupo.alunos %}
+                <span style="font-size: 0.9rem; padding: 8px 16px; background: var(--azul-claro); border-radius: 999px; font-weight: 600; color: var(--azul-pet);">
+                    {{ aluno }}
+                </span>
+            {% else %}
+                <p style="color: var(--texto-suave); font-style: italic;">Nenhum estudante cadastrado neste grupo.</p>
+            {% endfor %}
+        </div>
+
+        {% if session.get('usuario_logado') %}
+        <div style="margin-top: 25px; background: #f8fafd; padding: 20px; border-radius: 12px; border: 1px dashed var(--azul-pet);">
+            <form action="{{ url_for('editar_alunos', numero_gt=grupo.numero) }}" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="font-size: 0.95rem; font-weight: 800; color: var(--azul-pet);">Gerir Estudantes (separe os nomes por vírgulas):</label>
+                <input type="text" name="nomes_alunos" 
+                       value="{{ grupo.alunos|join(', ') }}" 
+                       placeholder="Ex: João Marcelo, Antônio Inácio..."
+                       style="width: 100%; padding: 12px; border: 1px solid var(--borda); border-radius: 8px; font-family: inherit;">
+                <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 10px 20px; font-size: 0.9rem;">
+                    Atualizar Lista
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="padding-top: 20px; border-top: 1px solid var(--azul-claro);">
+        <h3 style="color: var(--azul-pet); font-size: 1.2rem; margin-bottom: 10px;">📸 Atividades do Grupo</h3>
+        <p style="font-size: 1.05rem; color: var(--texto-suave); line-height: 1.7; margin-bottom: 25px;">
+            {{ grupo.descricao }}
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            <div style="aspect-ratio: 16/9; background: #f0f4f8; border-radius: 12px; display: grid; place-items: center; color: #94a3b8; border: 1px solid var(--borda);">
+                [Imagem de Reunião]
+            </div>
+            <div style="aspect-ratio: 16/9; background: #f0f4f8; border-radius: 12px; display: grid; place-items: center; color: #94a3b8; border: 1px solid var(--borda);">
+                [Atividade na UBS]
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--borda);">
+        <a href="{{ url_for('equipe') }}" class="btn btn-secondary">← Voltar para todos os Grupos</a>
+    </div>
+</section>
+{% endblock %}
