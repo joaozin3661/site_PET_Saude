@@ -23,7 +23,7 @@ export default async function Home() {
               UFPI · FMS Teresina · SUS Digital
             </p>
             <h1 className="mt-6 text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-              Saúde Digital na Atenção Primária à Saúde de Teresina
+              PET - Saúde Digital
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85">
               Formação, inovação e integração no SUS para fortalecer a cultura digital, apoiar trabalhadores e aproximar os serviços de saúde da comunidade.
