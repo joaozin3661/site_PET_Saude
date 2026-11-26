@@ -49,7 +49,10 @@ export type GrupoInfo = {
   tutor2Lattes: string | null;
 };
 
-export type Integrante = { id: number; grupo: number; nome: string; lattes: string | null };
+export type Funcao = "aluno" | "preceptor";
+export type Integrante = { id: number; grupo: number; nome: string; lattes: string | null; funcao: Funcao };
+
+export type ArquivoAtividade = { id: string; atividadeId: string; url: string; pathname: string; nomeArquivo: string };
 
 export type Noticia = {
   id: string;
@@ -107,9 +110,44 @@ export async function definirStatusAtividade(id: string, status: Exclude<Status,
   await sql`update atividades set status = ${status} where id = ${id}`;
 }
 
-export async function excluirAtividade(id: string) {
+// escopo: "todos" (administrador) ou o número do grupo do editor.
+// Devolve também as URLs dos arquivos anexados, para apagá-los do Blob.
+export async function excluirAtividade(id: string, escopo: "todos" | number): Promise<{ ok: boolean; urls: string[] }> {
   const sql = db();
-  await sql`delete from atividades where id = ${id}`;
+  const anexos = await sql.query(
+    `select aa.url from atividade_arquivos aa join atividades a on a.id = aa.atividade_id
+      where a.id = $1 and ($2::text = 'todos' or a.grupo::text = $2::text)`,
+    [id, String(escopo)],
+  );
+  const rows = await sql.query(
+    `delete from atividades where id = $1 and ($2::text = 'todos' or grupo::text = $2::text) returning id`,
+    [id, String(escopo)],
+  );
+  const ok = rows.length > 0;
+  return { ok, urls: ok ? anexos.map((r) => r.url as string) : [] };
+}
+
+export async function salvarArquivosAtividade(
+  atividadeId: string,
+  arquivos: { url: string; pathname: string; nomeArquivo: string }[],
+) {
+  const sql = db();
+  for (const a of arquivos) {
+    await sql`insert into atividade_arquivos (atividade_id, url, pathname, nome_arquivo)
+      values (${atividadeId}, ${a.url}, ${a.pathname}, ${a.nomeArquivo})`;
+  }
+}
+
+export async function listarArquivosDasAtividades(ids: string[]): Promise<ArquivoAtividade[]> {
+  await connection();
+  if (ids.length === 0) return [];
+  const sql = db();
+  const rows = await sql.query(
+    `select id, atividade_id as "atividadeId", url, pathname, nome_arquivo as "nomeArquivo"
+      from atividade_arquivos where atividade_id = any($1::text[]) order by criado_em`,
+    [ids],
+  );
+  return rows as ArquivoAtividade[];
 }
 
 export async function buscarFoto(id: string): Promise<Foto | undefined> {
@@ -139,9 +177,12 @@ export async function salvarFoto(foto: Omit<Foto, "criadoEm">) {
     values (${foto.id}, ${foto.titulo}, ${foto.descricao}, ${foto.grupo}, ${foto.url}, ${foto.pathname})`;
 }
 
-export async function excluirFoto(id: string): Promise<string | undefined> {
+export async function excluirFoto(id: string, escopo: "todos" | number): Promise<string | undefined> {
   const sql = db();
-  const rows = await sql`delete from fotos where id = ${id} returning url`;
+  const rows = await sql.query(
+    `delete from fotos where id = $1 and ($2::text = 'todos' or grupo::text = $2::text) returning url`,
+    [id, String(escopo)],
+  );
   return rows[0]?.url as string | undefined;
 }
 
@@ -164,9 +205,12 @@ export async function salvarMaterial(material: Omit<Material, "criadoEm">) {
       ${material.url}, ${material.pathname}, ${material.nomeArquivo}, ${material.grupo})`;
 }
 
-export async function excluirMaterial(id: string): Promise<string | undefined> {
+export async function excluirMaterial(id: string, escopo: "todos" | number): Promise<string | undefined> {
   const sql = db();
-  const rows = await sql`delete from materiais where id = ${id} returning url`;
+  const rows = await sql.query(
+    `delete from materiais where id = $1 and ($2::text = 'todos' or grupo::text = $2::text) returning url`,
+    [id, String(escopo)],
+  );
   return rows[0]?.url as string | undefined;
 }
 
@@ -189,20 +233,30 @@ export async function salvarGrupoInfo(info: GrupoInfo) {
 export async function listarIntegrantes(grupo: number): Promise<Integrante[]> {
   await connection();
   const sql = db();
-  const rows = await sql`select id, grupo, nome, lattes from integrantes where grupo = ${grupo} order by nome`;
+  const rows = await sql`select id, grupo, nome, lattes, funcao from integrantes where grupo = ${grupo} order by nome`;
   return rows as Integrante[];
 }
 
-export async function adicionarIntegrantes(grupo: number, pessoas: { nome: string; lattes: string | null }[]) {
+export async function adicionarIntegrantes(
+  grupo: number,
+  pessoas: { nome: string; lattes: string | null }[],
+  funcao: Funcao = "aluno",
+) {
   const sql = db();
   for (const p of pessoas) {
-    await sql`insert into integrantes (grupo, nome, lattes) values (${grupo}, ${p.nome}, ${p.lattes})`;
+    await sql`insert into integrantes (grupo, nome, lattes, funcao) values (${grupo}, ${p.nome}, ${p.lattes}, ${funcao})`;
   }
 }
 
 export async function atualizarLattesIntegrante(id: number, lattes: string | null) {
   const sql = db();
   await sql`update integrantes set lattes = ${lattes} where id = ${id}`;
+}
+
+export async function grupoDoIntegrante(id: number): Promise<number | null> {
+  const sql = db();
+  const rows = await sql`select grupo from integrantes where id = ${id}`;
+  return (rows[0]?.grupo as number | undefined) ?? null;
 }
 
 export async function excluirIntegrante(id: number) {
@@ -257,4 +311,27 @@ export async function excluirNoticia(id: string, autorId: number | null): Promis
   const rows = await sql`delete from noticias where id = ${id} and (${autorId}::int is null or autor_id = ${autorId}) returning capa_url`;
   if (rows.length === 0) return undefined;
   return rows[0].capa_url as string | null;
+}
+
+export type UsuarioLista = { id: number; nome: string; email: string; papel: "admin" | "editor"; grupo: number | null };
+
+export async function listarUsuarios(): Promise<UsuarioLista[]> {
+  await connection();
+  const sql = db();
+  const rows = await sql`select id, nome, email, papel, grupo from usuarios order by papel, nome`;
+  return rows as UsuarioLista[];
+}
+
+export async function atualizarUsuario(id: number, papel: "admin" | "editor", grupo: number | null) {
+  const sql = db();
+  await sql`update usuarios set papel = ${papel}, grupo = ${grupo} where id = ${id}`;
+}
+
+// Retorna false se o e-mail já existe.
+export async function criarUsuario(u: { email: string; nome: string; senhaHash: string; papel: "admin" | "editor"; grupo: number | null }) {
+  const sql = db();
+  const rows = await sql`insert into usuarios (email, nome, senha_hash, papel, grupo)
+    values (${u.email}, ${u.nome}, ${u.senhaHash}, ${u.papel}, ${u.grupo})
+    on conflict (email) do nothing returning id`;
+  return rows.length > 0;
 }

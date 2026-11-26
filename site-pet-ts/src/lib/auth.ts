@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { promisify } from "util";
 import { db } from "./db";
+import { podeGerenciar, type Papel } from "./permissoes";
 
 const scrypt = promisify(scryptCb);
 export const COOKIE_SESSAO = "pet_sessao";
@@ -47,8 +48,7 @@ export function lerToken(token: string): number | null {
   return Number(id);
 }
 
-export type Papel = "admin" | "editor";
-export type Usuario = { id: number; nome: string; email: string; papel: Papel };
+export type Usuario = { id: number; nome: string; email: string; papel: Papel; grupo: number | null };
 
 export async function usuarioAtual() {
   const token = (await cookies()).get(COOKIE_SESSAO)?.value;
@@ -56,7 +56,7 @@ export async function usuarioAtual() {
   const id = lerToken(token);
   if (id === null) return null;
   const sql = db();
-  const rows = await sql`select id, nome, email, papel from usuarios where id = ${id}`;
+  const rows = await sql`select id, nome, email, papel, grupo from usuarios where id = ${id}`;
   return (rows[0] as Usuario | undefined) ?? null;
 }
 
@@ -66,7 +66,14 @@ export async function exigirUsuario() {
   return usuario;
 }
 
-// Aprovar, recusar e excluir são só para administradores.
+// Alterar algo de um grupo: administrador (qualquer grupo) ou o editor daquele grupo.
+export async function exigirGestor(grupo: number | null) {
+  const usuario = await exigirUsuario();
+  if (!podeGerenciar(usuario, grupo)) throw new Error("Você só pode alterar o que é do seu grupo.");
+  return usuario;
+}
+
+// Aprovar, recusar e gerenciar usuários são só para administradores.
 export async function exigirAdmin() {
   const usuario = await exigirUsuario();
   if (usuario.papel !== "admin") throw new Error("Apenas administradores podem fazer isso.");

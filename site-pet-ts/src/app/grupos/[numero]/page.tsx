@@ -43,6 +43,9 @@ export default async function GrupoDetalhe({ params }: Props) {
     listarMateriais(grupo.numero),
   ]);
 
+  const alunos = integrantes.filter((i) => i.funcao === "aluno");
+  const preceptores = integrantes.filter((i) => i.funcao === "preceptor");
+
   const consulta = consultaMapa(grupo.unidade, info?.endereco);
   const mapaEmbed = `https://www.google.com/maps?q=${encodeURIComponent(consulta)}&output=embed`;
   const mapaLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`;
@@ -63,15 +66,26 @@ export default async function GrupoDetalhe({ params }: Props) {
             <h2 className="text-2xl font-bold text-azul">Sobre o grupo</h2>
             <p className="mt-4 text-lg leading-relaxed text-texto-suave">{grupo.descricao}</p>
 
-            <h2 className="mt-12 text-2xl font-bold text-azul">Integrantes</h2>
-            {integrantes.length > 0 ? (
+            <h2 className="mt-12 text-2xl font-bold text-azul">Preceptores(as)</h2>
+            {preceptores.length > 0 ? (
               <ul className="mt-4 grid gap-x-8 gap-y-2 text-texto sm:grid-cols-2">
-                {integrantes.map((i) => (
+                {preceptores.map((i) => (
                   <li key={i.id} className="border-b border-borda py-2"><Pessoa nome={i.nome} lattes={i.lattes} /></li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-4 text-texto-suave">A lista de integrantes será publicada em breve.</p>
+              <p className="mt-4 text-texto-suave">Os(as) preceptores(as) serão publicados(as) em breve.</p>
+            )}
+
+            <h2 className="mt-12 text-2xl font-bold text-azul">Estudantes</h2>
+            {alunos.length > 0 ? (
+              <ul className="mt-4 grid gap-x-8 gap-y-2 text-texto sm:grid-cols-2">
+                {alunos.map((i) => (
+                  <li key={i.id} className="border-b border-borda py-2"><Pessoa nome={i.nome} lattes={i.lattes} /></li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 text-texto-suave">A lista de estudantes será publicada em breve.</p>
             )}
           </div>
 

@@ -3,6 +3,7 @@ import { Cabecalho } from "@/components/Secao";
 import BotaoRemover from "@/components/BotaoRemover";
 import FormularioMaterial from "@/components/FormularioMaterial";
 import { exigirUsuario } from "@/lib/auth";
+import { podeGerenciar } from "@/lib/permissoes";
 import { listarMateriais } from "@/lib/store";
 import { removerMaterial } from "../actions";
 
@@ -16,7 +17,7 @@ export default async function PainelMateriais() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
-      <FormularioMaterial />
+      <FormularioMaterial perfil={{ papel: usuario.papel, grupo: usuario.grupo }} />
       <div>
         <Cabecalho eyebrow="Produção técnica" titulo={`${materiais.length} material${materiais.length === 1 ? "" : "is"} publicado${materiais.length === 1 ? "" : "s"}`} texto="Não publique documentos com CPF, matrícula, endereço ou dados de usuários." />
         <ul className="mt-8 grid gap-3">
@@ -26,7 +27,7 @@ export default async function PainelMateriais() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-laranja">{m.tipo} · {m.grupo ? `GT ${m.grupo}` : "Geral"}</p>
                 <p className="truncate font-semibold text-azul">{m.titulo}</p>
               </div>
-              {usuario.papel === "admin" && <BotaoRemover acao={removerMaterial} id={m.id} />}
+              {podeGerenciar(usuario, m.grupo) && <BotaoRemover acao={removerMaterial} id={m.id} />}
             </li>
           ))}
         </ul>

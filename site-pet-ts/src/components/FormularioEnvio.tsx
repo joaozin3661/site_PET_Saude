@@ -1,28 +1,65 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { upload } from "@vercel/blob/client";
+import { useRef, useState, type FormEvent } from "react";
 import { CATEGORIAS, GRUPOS } from "@/lib/content";
+import { podePublicarEm, type Perfil } from "@/lib/permissoes";
 
 const campo =
   "mt-2 w-full rounded-xl border border-borda bg-white px-4 py-3 text-texto outline-none transition focus:border-azul-2 focus:ring-4 focus:ring-azul-2/15";
 const rotulo = "text-sm font-semibold text-azul";
 
-export default function FormularioEnvio() {
+export default function FormularioEnvio({ perfil }: { perfil: Perfil }) {
   const [status, setStatus] = useState<"ocioso" | "enviando" | "ok" | "erro">("ocioso");
   const [mensagem, setMensagem] = useState("");
+  const [publicada, setPublicada] = useState(false);
+  const arquivos = useRef<HTMLInputElement>(null);
 
   async function enviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     const form = evento.currentTarget;
     const dados = Object.fromEntries(new FormData(form).entries());
+    const escolhidos = Array.from(arquivos.current?.files ?? []);
+
+    if (escolhidos.length > 10) {
+      setStatus("erro");
+      setMensagem("Envie no máximo 10 arquivos por atividade.");
+      return;
+    }
+    const grande = escolhidos.find((f) => f.size > 50 * 1024 * 1024);
+    if (grande) {
+      setStatus("erro");
+      setMensagem(`“${grande.name}” passa de 50 MB.`);
+      return;
+    }
 
     setStatus("enviando");
     setMensagem("");
+
+    // Os arquivos vão direto ao Blob; a atividade só guarda os links.
+    const anexos: { url: string; pathname: string; nomeArquivo: string }[] = [];
+    for (const [i, file] of escolhidos.entries()) {
+      setMensagem(`Enviando arquivo ${i + 1} de ${escolhidos.length}...`);
+      try {
+        const enviado = await upload(`atividades/${file.name}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/blob/upload",
+          contentType: file.type,
+        });
+        anexos.push({ url: enviado.url, pathname: enviado.pathname, nomeArquivo: file.name });
+      } catch (erro) {
+        setStatus("erro");
+        setMensagem(`Não foi possível enviar “${file.name}”: ${(erro as Error).message || "tente novamente."}`);
+        return;
+      }
+    }
+
+    setMensagem("Enviando a atividade...");
     try {
       const resposta = await fetch("/api/atividades", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dados),
+        body: JSON.stringify({ ...dados, arquivos: anexos }),
       });
       const json = await resposta.json();
       if (!resposta.ok) {
@@ -30,6 +67,7 @@ export default function FormularioEnvio() {
         setMensagem(json.erro ?? "Não foi possível enviar.");
         return;
       }
+      setPublicada(json.status === "aprovado");
       setStatus("ok");
       form.reset();
     } catch {
@@ -42,7 +80,9 @@ export default function FormularioEnvio() {
     return (
       <div className="mt-12 rounded-2xl bg-verde p-8 text-center">
         <h2 className="text-xl font-semibold text-azul">Recebemos sua atividade</h2>
-        <p className="mt-3 text-texto-suave">Ela será publicada depois da revisão da equipe de comunicação.</p>
+        <p className="mt-3 text-texto-suave">
+          {publicada ? "Ela já está publicada no site." : "Ela será publicada depois da aprovação de um administrador."}
+        </p>
         <button type="button" onClick={() => setStatus("ocioso")} className="mt-6 font-semibold text-azul-2 hover:underline">
           Enviar outra atividade
         </button>
@@ -55,10 +95,10 @@ export default function FormularioEnvio() {
       <div className="grid gap-6 md:grid-cols-2">
         <label className="block">
           <span className={rotulo}>Grupo</span>
-          <select name="grupo" defaultValue="" className={campo}>
-            <option value="">Comunicação / geral do PET (aparece no site todo)</option>
-            {GRUPOS.map((g) => (
-              <option key={g.numero} value={g.numero}>GT {g.numero}: {g.unidade} (só na página do grupo)</option>
+          <select name="grupo" defaultValue={perfil.papel === "admin" ? "" : String(perfil.grupo ?? "")} className={campo}>
+            <option value="">Canal geral (aparece no site todo{perfil.papel === "admin" ? "" : "; passa por aprovação"})</option>
+            {GRUPOS.filter((g) => podePublicarEm(perfil, g.numero)).map((g) => (
+              <option key={g.numero} value={g.numero}>GT {g.numero}: {g.unidade} (só na página do grupo{perfil.papel === "admin" ? "" : "; publica direto"})</option>
             ))}
           </select>
         </label>
@@ -94,11 +134,21 @@ export default function FormularioEnvio() {
         <textarea name="descricao" rows={6} maxLength={4000} className={campo} placeholder="O que foi feito, quem participou, onde aconteceu, resultados." />
       </label>
 
+      <div>
+        <label htmlFor="arquivos" className={rotulo}>Arquivos (opcional)</label>
+        <input id="arquivos" ref={arquivos} type="file" multiple accept="application/pdf,.docx,.pptx" className={campo} />
+        <span className="mt-1 block text-xs text-texto-suave">PDF, DOCX ou PPTX, até 50 MB cada e no máximo 10 arquivos. Eles aparecem na página da atividade.</span>
+      </div>
+
       <label className="block">
         <span className={rotulo}>Contato para dúvidas (opcional)</span>
         <input name="contato" maxLength={120} className={campo} placeholder="E-mail ou telefone da pessoa responsável" />
         <span className="mt-1 block text-xs text-texto-suave">Não será exibido no site.</span>
       </label>
+
+      {status === "enviando" && mensagem && (
+        <p role="status" className="rounded-xl bg-azul-claro px-4 py-3 text-sm text-azul-2">{mensagem}</p>
+      )}
 
       {status === "erro" && (
         <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{mensagem}</p>

@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { exigirAdmin } from "@/lib/auth";
+import { exigirGestor } from "@/lib/auth";
 import { getGrupo } from "@/lib/content";
-import { adicionarIntegrantes, atualizarLattesIntegrante, excluirIntegrante, salvarGrupoInfo } from "@/lib/store";
+import { adicionarIntegrantes, atualizarLattesIntegrante, excluirIntegrante, grupoDoIntegrante, salvarGrupoInfo } from "@/lib/store";
 
 function texto(valor: FormDataEntryValue | null, limite: number) {
   return typeof valor === "string" ? valor.trim().slice(0, limite) : "";
@@ -40,8 +40,8 @@ function atualizar(numero: number) {
 }
 
 export async function salvarInfoGrupo(formData: FormData) {
-  await exigirAdmin();
   const grupo = numeroGrupo(formData);
+  await exigirGestor(grupo);
   await salvarGrupoInfo({
     grupo,
     endereco: texto(formData.get("endereco"), 200) || null,
@@ -52,8 +52,8 @@ export async function salvarInfoGrupo(formData: FormData) {
 }
 
 export async function adicionarIntegrantesGrupo(formData: FormData) {
-  await exigirAdmin();
   const grupo = numeroGrupo(formData);
+  await exigirGestor(grupo);
   // Um integrante por linha. Lattes opcional depois de "|": Nome | https://lattes.cnpq.br/...
   const pessoas = texto(formData.get("nomes"), 8000)
     .split(/\n+/)
@@ -63,23 +63,24 @@ export async function adicionarIntegrantesGrupo(formData: FormData) {
     })
     .filter((p) => p.nome);
   if (pessoas.length === 0) throw new Error("Escreva pelo menos um nome.");
-  await adicionarIntegrantes(grupo, pessoas);
+  const funcao = formData.get("funcao") === "preceptor" ? "preceptor" : "aluno";
+  await adicionarIntegrantes(grupo, pessoas, funcao);
   atualizar(grupo);
 }
 
 export async function salvarLattesIntegrante(formData: FormData) {
-  await exigirAdmin();
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id)) throw new Error("Integrante inválido.");
+  await exigirGestor(await grupoDoIntegrante(id));
   await atualizarLattesIntegrante(id, lattes(formData.get("lattes")));
   revalidatePath("/grupos", "layout");
   revalidatePath("/painel/grupos", "layout");
 }
 
 export async function removerIntegrante(id: string) {
-  await exigirAdmin();
   const numero = Number(id);
   if (!Number.isInteger(numero)) throw new Error("Integrante inválido.");
+  await exigirGestor(await grupoDoIntegrante(numero));
   await excluirIntegrante(numero);
   revalidatePath("/grupos", "layout");
   revalidatePath("/painel/grupos", "layout");

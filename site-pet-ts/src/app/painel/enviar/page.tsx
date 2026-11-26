@@ -7,16 +7,16 @@ export const metadata: Metadata = { title: "Painel · Enviar atividade" };
 export const instant = false;
 
 export default async function PainelEnviar() {
-  await exigirUsuario();
+  const usuario = await exigirUsuario();
 
   return (
     <div className="mx-auto max-w-3xl">
       <Cabecalho
         eyebrow="Para os grupos"
         titulo="Enviar uma atividade"
-        texto="Envie eventos, oficinas, visitas e registros do seu grupo. A equipe de comunicação revisa antes de publicar."
+        texto="Envie eventos, oficinas, visitas e registros. No seu grupo a atividade é publicada direto na página do grupo; no canal geral, passa pela aprovação de um administrador."
       />
-      <FormularioEnvio />
+      <FormularioEnvio perfil={{ papel: usuario.papel, grupo: usuario.grupo }} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Cabecalho } from "@/components/Secao";
 import BotaoRemover from "@/components/BotaoRemover";
 import FormularioFoto from "@/components/FormularioFoto";
 import { exigirUsuario } from "@/lib/auth";
+import { podeGerenciar } from "@/lib/permissoes";
 import { listarFotos } from "@/lib/store";
 import { removerFoto } from "../actions";
 
@@ -17,7 +18,7 @@ export default async function PainelFotos() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr]">
-      <FormularioFoto />
+      <FormularioFoto perfil={{ papel: usuario.papel, grupo: usuario.grupo }} />
       <div>
         <Cabecalho eyebrow="Galeria" titulo={`${fotos.length} foto${fotos.length === 1 ? "" : "s"} publicada${fotos.length === 1 ? "" : "s"}`} />
         <ul className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -26,7 +27,7 @@ export default async function PainelFotos() {
               <Image src={f.url} alt={f.titulo} width={600} height={450} className="aspect-[4/3] w-full object-cover" />
               <div className="flex items-center justify-between gap-3 p-4">
                 <p className="truncate font-semibold text-azul">{f.titulo} <span className="text-xs font-normal text-texto-suave">· {f.grupo ? `GT ${f.grupo}` : "Geral"}</span></p>
-                {usuario.papel === "admin" && <BotaoRemover acao={removerFoto} id={f.id} />}
+                {podeGerenciar(usuario, f.grupo) && <BotaoRemover acao={removerFoto} id={f.id} />}
               </div>
             </li>
           ))}

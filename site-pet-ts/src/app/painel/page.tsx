@@ -3,7 +3,8 @@ import { Cabecalho } from "@/components/Secao";
 import { formatarData } from "@/lib/format";
 import BotaoRemover from "@/components/BotaoRemover";
 import { exigirUsuario } from "@/lib/auth";
-import { listarAtividadesPorStatus } from "@/lib/store";
+import { podeGerenciar } from "@/lib/permissoes";
+import { listarArquivosDasAtividades, listarAtividadesPorStatus } from "@/lib/store";
 import { aprovarAtividade, recusarAtividade, removerAtividade } from "./actions";
 
 export const instant = false;
@@ -14,11 +15,12 @@ export default async function PainelAtividades() {
   const usuario = await exigirUsuario();
   const admin = usuario.papel === "admin";
   const pendentes = await listarAtividadesPorStatus("pendente");
-  const publicadas = admin ? await listarAtividadesPorStatus("aprovado") : [];
+  const publicadas = await listarAtividadesPorStatus("aprovado");
+  const anexos = await listarArquivosDasAtividades(pendentes.map((a) => a.id));
 
   return (
     <>
-      <Cabecalho eyebrow="Revisão" titulo="Atividades enviadas" texto={admin ? "Aprove para publicar no site, ou recuse. Atividades recusadas não aparecem em lugar nenhum." : "Estas atividades aguardam a revisão de um administrador. Só administradores aprovam, recusam ou excluem."} />
+      <Cabecalho eyebrow="Revisão" titulo="Atividades enviadas" texto={admin ? "Aprove para publicar no site, ou recuse. Atividades recusadas não aparecem em lugar nenhum." : "Atividades do canal geral aguardam a aprovação de um administrador. Você vê as de todos os grupos, mas só exclui as do seu."} />
       <ul className="mt-10 grid gap-5">
         {pendentes.length === 0 && <li className="text-texto-suave">Nenhuma atividade aguardando revisão.</li>}
         {pendentes.map((a) => (
@@ -32,7 +34,18 @@ export default async function PainelAtividades() {
             {a.dataEvento && <p className="mt-1 text-sm text-texto-suave">Evento em {formatarData(a.dataEvento)}</p>}
             <p className="mt-4 leading-relaxed text-texto">{a.resumo}</p>
             {a.descricao && <p className="mt-3 whitespace-pre-line leading-relaxed text-texto-suave">{a.descricao}</p>}
-            {a.contato && <p className="mt-3 text-sm text-texto-suave">Contato (não publicado): {a.contato}</p>}
+            {a.contato && podeGerenciar(usuario, a.grupo) && <p className="mt-3 text-sm text-texto-suave">Contato (não publicado): {a.contato}</p>}
+            {anexos.some((f) => f.atividadeId === a.id) && (
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {anexos.filter((f) => f.atividadeId === a.id).map((f) => (
+                  <li key={f.id}>
+                    <a href={f.url} target="_blank" rel="noopener noreferrer" className="inline-block rounded-full border border-borda px-3 py-1 text-sm font-medium text-azul-2 hover:bg-azul-claro">
+                      {f.nomeArquivo}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
             {admin && (
               <div className="mt-6 flex gap-3">
                 <form action={aprovarAtividade.bind(null, a.id)}>
@@ -47,7 +60,7 @@ export default async function PainelAtividades() {
         ))}
       </ul>
 
-      {admin && publicadas.length > 0 && (
+      {publicadas.length > 0 && (
         <div className="mt-14">
           <h2 className="text-lg font-bold text-azul">Atividades publicadas</h2>
           <ul className="mt-4 grid gap-3">
@@ -57,7 +70,7 @@ export default async function PainelAtividades() {
                   <p className="text-xs text-texto-suave">{a.grupo ? `GT ${a.grupo}` : "Geral do PET"} · {formatarData(a.criadoEm)}</p>
                   <p className="truncate font-semibold text-azul">{a.titulo}</p>
                 </div>
-                <BotaoRemover acao={removerAtividade} id={a.id} />
+                {podeGerenciar(usuario, a.grupo) && <BotaoRemover acao={removerAtividade} id={a.id} />}
               </li>
             ))}
           </ul>

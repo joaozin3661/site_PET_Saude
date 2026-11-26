@@ -10,15 +10,16 @@ export default async function PainelLayout({ children }: { children: React.React
     <Secao>
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-borda py-6">
         <div>
-          <p className="text-sm text-texto-suave">Olá, {usuario.nome} · {usuario.papel === "admin" ? "administrador" : "editor"}</p>
+          <p className="text-sm text-texto-suave">Olá, {usuario.nome} · {usuario.papel === "admin" ? "administrador" : usuario.grupo ? `editor do GT ${usuario.grupo}` : "editor (sem grupo)"}</p>
           <nav aria-label="Painel" className="mt-2 flex flex-wrap gap-2">
             <Link href="/painel" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Atividades</Link>
             <Link href="/painel/fotos" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Galeria</Link>
             <Link href="/painel/enviar" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Enviar atividade</Link>
             <Link href="/painel/noticias" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Notícias</Link>
             <Link href="/painel/materiais" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Produção técnica</Link>
+            <Link href="/painel/grupos" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Grupos</Link>
             {usuario.papel === "admin" && (
-              <Link href="/painel/grupos" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Grupos</Link>
+              <Link href="/painel/usuarios" className="rounded-full px-4 py-2 text-sm font-semibold text-azul hover:bg-azul-claro">Usuários</Link>
             )}
           </nav>
         </div>

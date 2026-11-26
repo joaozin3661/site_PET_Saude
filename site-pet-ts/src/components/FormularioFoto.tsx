@@ -4,10 +4,11 @@ import { upload } from "@vercel/blob/client";
 import { useRef, useState, type FormEvent } from "react";
 import { cadastrarFoto } from "@/app/painel/actions";
 import { GRUPOS } from "@/lib/content";
+import { podePublicarEm, type Perfil } from "@/lib/permissoes";
 
 const campo = "mt-2 w-full rounded-xl border border-borda bg-white px-4 py-3 outline-none focus:border-azul-2 focus:ring-4 focus:ring-azul-2/15";
 
-export default function FormularioFoto() {
+export default function FormularioFoto({ perfil }: { perfil: Perfil }) {
   const arquivo = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<"ocioso" | "enviando" | "erro" | "ok">("ocioso");
   const [mensagem, setMensagem] = useState("");
@@ -63,9 +64,9 @@ export default function FormularioFoto() {
       </label>
       <label className="block">
         <span className="text-sm font-semibold text-azul">Onde publicar</span>
-        <select name="grupo" defaultValue="" className={campo}>
+        <select name="grupo" defaultValue={perfil.papel === "admin" ? "" : String(perfil.grupo ?? "")} className={campo}>
           <option value="">Canal geral (aparece na galeria do site)</option>
-          {GRUPOS.map((g) => (
+          {GRUPOS.filter((g) => podePublicarEm(perfil, g.numero)).map((g) => (
             <option key={g.numero} value={g.numero}>Só na página do GT {g.numero}</option>
           ))}
         </select>

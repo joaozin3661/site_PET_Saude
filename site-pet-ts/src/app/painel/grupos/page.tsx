@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Cabecalho } from "@/components/Secao";
 import { exigirUsuario } from "@/lib/auth";
 import { GRUPOS } from "@/lib/content";
+import { podeGerenciar } from "@/lib/permissoes";
 
 export const instant = false;
 
@@ -11,11 +11,10 @@ export const metadata: Metadata = { title: "Painel · Grupos" };
 
 export default async function PainelGrupos() {
   const usuario = await exigirUsuario();
-  if (usuario.papel !== "admin") redirect("/painel");
 
   return (
     <>
-      <Cabecalho eyebrow="Administração" titulo="Grupos tutoriais" texto="Cadastre o endereço da unidade, o Lattes dos professores e os integrantes de cada grupo." />
+      <Cabecalho eyebrow="Administração" titulo="Grupos tutoriais" texto="Endereço da unidade, Lattes dos tutores e integrantes. Você pode editar o seu grupo; os demais são só para consulta." />
       <ul className="mt-10 grid gap-3 md:grid-cols-2">
         {GRUPOS.map((g) => (
           <li key={g.numero}>
@@ -25,6 +24,9 @@ export default async function PainelGrupos() {
                 <span className="block truncate font-semibold text-azul">{g.unidade}</span>
                 <span className="block truncate text-sm text-texto-suave">{g.titulo}</span>
               </span>
+              {podeGerenciar(usuario, g.numero) && usuario.papel !== "admin" && (
+                <span className="ml-auto shrink-0 rounded-full bg-laranja/15 px-3 py-1 text-xs font-semibold text-laranja">Seu grupo</span>
+              )}
             </Link>
           </li>
         ))}
